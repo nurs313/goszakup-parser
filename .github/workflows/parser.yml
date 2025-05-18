@@ -6,6 +6,7 @@ on:
 jobs:
   parse:
     runs-on: ubuntu-latest
+    environment: main  # Имя твоего окружения
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
@@ -20,6 +21,5 @@ jobs:
     - name: Run parser
       env:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-        CHmoji: true
         CHAT_ID: ${{ secrets.CHAT_ID }}
       run: python ad_parser.py
