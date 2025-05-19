@@ -28,11 +28,12 @@ jobs:
         ls -la
         cat seen_ads.json || echo "seen_ads.json not found"
     - name: Commit and push seen_ads.json
-      run: |
-        git config --global user.name "GitHub Actions Bot"
-        git config --global user.email "actions@github.com"
-        git add seen_ads.json || echo "No seen_ads.json to add"
-        git commit -m "Update seen_ads.json" || echo "No changes to commit"
-        git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  run: |
+    git config --global user.name "GitHub Actions Bot"
+    git config --global user.email "actions@github.com"
+    git add seen_ads.json
+    git commit -m "Update seen_ads.json" || echo "No changes to commit"
+    git push
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+     
