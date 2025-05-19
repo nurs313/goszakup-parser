@@ -6,7 +6,7 @@ on:
 jobs:
   parse:
     runs-on: ubuntu-latest
-    environment: main  # Имя твоего окружения
+    environment: parser-env  # Имя твоего окружения
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
