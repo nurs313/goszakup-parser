@@ -1,7 +1,7 @@
 name: Goszakup Parser
 on:
   schedule:
-    - cron: '*/30 * * * *'  # Каждые 30 минут
+    - cron: '*/5 * * * *'  # Каждые 30 минут
   workflow_dispatch:  # Позволяет запускать вручную
 jobs:
   parse:
