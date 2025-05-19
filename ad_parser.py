@@ -8,7 +8,8 @@ from urllib.parse import urljoin
 import asyncio
 
 # Настройки
-SITE_URL = "https://goszakup.gov.kz/ru/search/lots?filter%5Bname%5D=&filter%5Bnumber%5D=&filter%5Bnumber_anno%5D=&filter%5Benstru%5D=&filter%5Bstatus%5D%5B%5D=360&filter%5Bcustomer%5D=&filter%5Bamount_from%5D=100000000&filter%5Bamount_to%5D=&filter%5Btrade_type%5D=&filter%5Bmonth%5D=&filter%5Bplan_number%5D=&filter%5Bend_date_from%5D=&filter%5Bend_date_to%5D=&filter%5Bstart_date_to%5D=&filter%5Byear%5D=&filter%5Bitogi_date_from%5D=&filter%5Bitogi_date_to%5D=&filter%5Bstart_date_from%5D=&filter%5Bmore%5D=&smb="
+SITE_URL = "https://goszakup.gov.kz/ru/search/lots?filter%5Bname%5D=&filter%5Bnumber%5D=&filter%5Bnumber_anno%5D=&filter%5Benstru%5D=&filter%5Bstatus%5D%5B%5D=360&filter%5Bcustomer%5D=&filter%5Bamount_from%5D=100000000&filter%5Bamount_to%5D=&filter%5Btrade_type%5D=&filter%5Bmonth%5D=&filter%5Bplan_number%5D=&filter%5Bend_date_from%5D=&filter%5Bend_date_to%5D=&filter%5Bstart_date_to%5D=&filter%5Bstart_date_from%5D=&filter%5Bmore%5D=&smb="
+SELECTOR = 'a[href^="/ru/announce/index/"]'
 BOT_TOKEN = os.getenv("BOT_TOKEN", "7927707474:AAG0jX3r_575FuUVIBWdFUGWQwFJYjlKlGY")
 CHAT_ID = os.getenv("CHAT_ID", "5309614527")
 DATA_FILE = "seen_ads.json"
@@ -19,15 +20,26 @@ bot = telegram.Bot(token=BOT_TOKEN)
 # Функции для работы с файлом
 def load_seen_ads():
     if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, 'r') as f:
-            return set(json.load(f))
+        try:
+            with open(DATA_FILE, 'r') as f:
+                ads = set(json.load(f))
+                print(f"{time.ctime()}: Загружено {len(ads)} объявлений из {DATA_FILE}")
+                return ads
+        except json.JSONDecodeError as e:
+            print(f"{time.ctime()}: Ошибка чтения {DATA_FILE}: {e}. Начинаем с пустого списка")
+            return set()
     print(f"{time.ctime()}: Файл {DATA_FILE} не найден, начинаем с пустого списка")
     return set()
 
 def save_seen_ads(seen_ads):
-    with open(DATA_FILE, 'w') as f:
-        json.dump(list(seen_ads), f)
-    print(f"{time.ctime()}: Сохранено {len(seen_ads)} объявлений в {DATA_FILE}")
+    try:
+        with open(DATA_FILE, 'w') as f:
+            json.dump(list(seen_ads), f, indent=2)
+        print(f"{time.ctime()}: Сохранено {len(seen_ads)} объявлений в {DATA_FILE}")
+        with open(DATA_FILE, 'r') as f:
+            print(f"{time.ctime()}: Содержимое {DATA_FILE}: {f.read()}")
+    except Exception as e:
+        print(f"{time.ctime()}: Ошибка при сохранении {DATA_FILE}: {e}")
 
 # Функция парсинга объявлений
 def parse_ads():
@@ -62,10 +74,10 @@ async def check_new_ads():
         for ad in new_ads:
             await send_notification(ad)
             seen_ads.add(ad)
-        save_seen_ads(seen_ads)
     else:
         print(f"{time.ctime()}: Новых объявлений нет")
-    return seen_ads  # Возвращаем для сохранения в репозитории
+    save_seen_ads(seen_ads)  # Сохраняем всегда
+    return seen_ads
 
 # Главная функция
 if __name__ == "__main__":
