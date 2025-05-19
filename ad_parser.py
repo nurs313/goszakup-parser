@@ -11,7 +11,7 @@ import asyncio
 SITE_URL = "https://goszakup.gov.kz/ru/search/lots?filter%5Bname%5D=&filter%5Bnumber%5D=&filter%5Bnumber_anno%5D=&filter%5Benstru%5D=&filter%5Bstatus%5D%5B%5D=360&filter%5Bcustomer%5D=&filter%5Bamount_from%5D=100000000&filter%5Bamount_to%5D=&filter%5Btrade_type%5D=&filter%5Bmonth%5D=&filter%5Bplan_number%5D=&filter%5Bend_date_from%5D=&filter%5Bend_date_to%5D=&filter%5Bstart_date_to%5D=&filter%5Byear%5D=&filter%5Bitogi_date_from%5D=&filter%5Bitogi_date_to%5D=&filter%5Bstart_date_from%5D=&filter%5Bmore%5D=&smb="
 SELECTOR = 'a[href^="/ru/announce/index/"]'
 BOT_TOKEN = os.getenv("BOT_TOKEN", "7927707474:AAG0jX3r_575FuUVIBWdFUGWQwFJYjlKlGY")
-CHAT_IDS = os.getenv("CHAT_IDS", "5309614527").split(",")
+CHAT_ID = os.getenv("CHAT_ID", "5309614527")
 DATA_FILE = "seen_ads.json"
 LOG_FILE = "parser_log.txt"
 
@@ -77,13 +77,12 @@ def parse_ads():
 
 # Асинхронная функция отправки уведомления в Telegram
 async def send_telegram_notification(link):
-    for chat_id in CHAT_IDS:
-        log_message(f"Отправка уведомления в Telegram на CHAT_ID: {chat_id}: {link}")
-        try:
-            await bot.send_message(chat_id=chat_id, text=f"Новое объявление: {link}")
-            log_message(f"Успешно отправлено уведомление в Telegram на CHAT_ID: {chat_id}: {link}")
-        except Exception as e:
-            log_message(f"Ошибка при отправке уведомления в Telegram на CHAT_ID: {chat_id}: {e}")
+    log_message(f"Отправка уведомления в Telegram: {link}")
+    try:
+        await bot.send_message(chat_id=CHAT_ID, text=f"Новое объявление: {link}")
+        log_message(f"Успешно отправлено уведомление в Telegram: {link}")
+    except Exception as e:
+        log_message(f"Ошибка при отправке уведомления в Telegram: {e}")
 
 # Проверка новых объявлений
 async def check_new_ads():
