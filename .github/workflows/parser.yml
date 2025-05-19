@@ -3,13 +3,19 @@ on:
   schedule:
     - cron: '*/30 * * * *'  # Каждые 30 минут
   workflow_dispatch:  # Позволяет запускать вручную
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   parse:
     runs-on: ubuntu-latest
-    environment: parser-env  # Имя твоего окружения
+    environment: parser-env
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          ref: main
+          fetch-depth: 0
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -26,7 +32,7 @@ jobs:
       - name: Run parser
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          CHAT_ID: ${{ secrets.CHAT_ID }}
+          CHAT_IDS: ${{ secrets.CHAT_IDS }}
         run: python ad_parser.py
       - name: Debug seen_ads.json
         run: |
@@ -48,3 +54,9 @@ jobs:
         run: |
           git status
           git diff
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: parser-logs
+          path: parser_log.txt
