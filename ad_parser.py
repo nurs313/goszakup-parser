@@ -16,7 +16,11 @@ DATA_FILE = "seen_ads.json"
 
 # Инициализация Telegram-бота
 print(f"{time.ctime()}: Инициализация бота...")
-bot = telegram.Bot(token=BOT_TOKEN)
+try:
+    bot = telegram.Bot(token=BOT_TOKEN)
+    print(f"{time.ctime()}: Бот успешно инициализирован")
+except Exception as e:
+    print(f"{time.ctime()}: Ошибка инициализации бота: {e}")
 
 # Функции для работы с файлом
 def load_seen_ads():
@@ -41,7 +45,6 @@ def save_seen_ads(seen_ads):
         print(f"{time.ctime()}: Успешно сохранено {len(seen_ads)} объявлений в {DATA_FILE}")
         with open(DATA_FILE, 'r') as f:
             print(f"{time.ctime()}: Содержимое {DATA_FILE}: {f.read()}")
-        # Проверяем, существует ли файл
         if os.path.exists(DATA_FILE):
             print(f"{time.ctime()}: Файл {DATA_FILE} подтверждён в директории")
         else:
@@ -51,7 +54,7 @@ def save_seen_ads(seen_ads):
 
 # Функция парсинга объявлений
 def parse_ads():
-    print(f"{time.ctime()}: SELECTOR = {SELECTOR}")
+    print(f"{time.ctime()}: Проверка SELECTOR: {SELECTOR}")
     try:
         print(f"{time.ctime()}: Выполняется запрос к {SITE_URL}")
         response = requests.get(SITE_URL, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'})
@@ -95,4 +98,8 @@ async def check_new_ads():
 # Главная функция
 if __name__ == "__main__":
     print(f"{time.ctime()}: Парсер запущен...")
-    asyncio.run(check_new_ads())
+    try:
+        asyncio.run(check_new_ads())
+        print(f"{time.ctime()}: Парсер завершил работу")
+    except Exception as e:
+        print(f"{time.ctime()}: Ошибка выполнения парсера: {e}")
