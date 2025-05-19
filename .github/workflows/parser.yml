@@ -32,7 +32,7 @@ jobs:
       - name: Run parser
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          CHAT_IDS: ${{ secrets.CHAT_IDS }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
         run: python ad_parser.py
       - name: Debug seen_ads.json
         run: |
