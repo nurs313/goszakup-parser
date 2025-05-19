@@ -1,7 +1,7 @@
 name: Goszakup Parser
 on:
   schedule:
-    - cron: '*/5 * * * *'  # Каждые 30 минут
+    - cron: '*/30 * * * *'  # Каждые 30 минут
   workflow_dispatch:  # Позволяет запускать вручную
 jobs:
   parse:
@@ -23,11 +23,15 @@ jobs:
         BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         CHAT_ID: ${{ secrets.CHAT_ID }}
       run: python ad_parser.py
+    - name: Debug seen_ads.json
+      run: |
+        ls -la
+        cat seen_ads.json || echo "seen_ads.json not found"
     - name: Commit and push seen_ads.json
       run: |
         git config --global user.name "GitHub Actions Bot"
         git config --global user.email "actions@github.com"
-        git add seen_ads.json
+        git add seen_ads.json || echo "No seen_ads.json to add"
         git commit -m "Update seen_ads.json" || echo "No changes to commit"
         git push
       env:
