@@ -9,7 +9,6 @@ import asyncio
 
 # Настройки
 SITE_URL = "https://goszakup.gov.kz/ru/search/lots?filter%5Bname%5D=&filter%5Bnumber%5D=&filter%5Bnumber_anno%5D=&filter%5Benstru%5D=&filter%5Bstatus%5D%5B%5D=360&filter%5Bcustomer%5D=&filter%5Bamount_from%5D=100000000&filter%5Bamount_to%5D=&filter%5Btrade_type%5D=&filter%5Bmonth%5D=&filter%5Bplan_number%5D=&filter%5Bend_date_from%5D=&filter%5Bend_date_to%5D=&filter%5Bstart_date_to%5D=&filter%5Byear%5D=&filter%5Bitogi_date_from%5D=&filter%5Bitogi_date_to%5D=&filter%5Bstart_date_from%5D=&filter%5Bmore%5D=&smb="
-SELECTOR = 'a[href^="/ru/announce/index/"]'
 BOT_TOKEN = os.getenv("BOT_TOKEN", "7927707474:AAG0jX3r_575FuUVIBWdFUGWQwFJYjlKlGY")
 CHAT_ID = os.getenv("CHAT_ID", "5309614527")
 DATA_FILE = "seen_ads.json"
@@ -22,11 +21,13 @@ def load_seen_ads():
     if os.path.exists(DATA_FILE):
         with open(DATA_FILE, 'r') as f:
             return set(json.load(f))
+    print(f"{time.ctime()}: Файл {DATA_FILE} не найден, начинаем с пустого списка")
     return set()
 
 def save_seen_ads(seen_ads):
     with open(DATA_FILE, 'w') as f:
         json.dump(list(seen_ads), f)
+    print(f"{time.ctime()}: Сохранено {len(seen_ads)} объявлений в {DATA_FILE}")
 
 # Функция парсинга объявлений
 def parse_ads():
@@ -64,8 +65,9 @@ async def check_new_ads():
         save_seen_ads(seen_ads)
     else:
         print(f"{time.ctime()}: Новых объявлений нет")
+    return seen_ads  # Возвращаем для сохранения в репозитории
 
-# Основная функция
+# Главная функция
 if __name__ == "__main__":
     print(f"{time.ctime()}: Парсер запущен...")
     asyncio.run(check_new_ads())
